@@ -2,8 +2,10 @@ import os
 import time
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import numpy as np
 from tqdm import tqdm
+import numpy as np
 
 from NetWork import ResNet
 from ImageUtils import parse_record
@@ -23,14 +25,30 @@ class Cifar(nn.Module):
         )
         ### YOUR CODE HERE
         # define cross entropy loss and optimizer
-
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = optim.SGD(
+            self.network.parameters(),
+            lr=self.config.learning_rate,
+            momentum=self.config.momentum,
+            weight_decay=self.config.weight_decay
+        )
         ### YOUR CODE HERE
     
+    def make_batch(self, curr_x_train, batch_size):
+        data = []
+        for i in range(batch_size):
+            image = parse_record(curr_x_train[i],training=True)
+            data.append(image)
+        return data
+
+
     def train(self, x_train, y_train, max_epoch):
         self.network.train()
         # Determine how many batches in an epoch
         num_samples = x_train.shape[0]
-        num_batches = num_samples // self.config.batch_size
+        #num_batches = num_samples // self.config.batch_size
+        num_batches = 1
+        self.config.batch_size = 2
 
         print('### Training... ###')
         for epoch in range(1, max_epoch+1):
@@ -42,6 +60,7 @@ class Cifar(nn.Module):
 
             ### YOUR CODE HERE
             # Set the learning rate for this epoch
+            self.config.learning_rate = 0.1
             # Usage example: divide the initial learning rate by 10 after several epochs
             
             ### YOUR CODE HERE
@@ -51,12 +70,24 @@ class Cifar(nn.Module):
                 # Construct the current batch.
                 # Don't forget to use "parse_record" to perform data preprocessing.
                 # Don't forget L2 weight decay
-                
-                ### YOUR CODE HERE
+                batch_start = i * self.config.batch_size
+                batch_end = (i + 1) * self.config.batch_size
+                inputs = self.make_batch(curr_x_train[batch_start:batch_end],self.config.batch_size)
+                targets = curr_y_train[batch_start:batch_end]
+                inputs = np.array(inputs)
+                targets = np.array(targets)
+                inputs = torch.tensor(inputs, dtype=torch.float32)
+                targets = torch.tensor(targets, dtype=torch.long)
+                print("the shape of the batch before sending for training")
+                print(inputs.shape)
+                print(targets.shape)
                 self.optimizer.zero_grad()
+                outputs = self.network(inputs)
+                loss = self.criterion(outputs, targets)
                 loss.backward()
                 self.optimizer.step()
-
+                print("helllo world")
+                i+=1
                 print('Batch {:d}/{:d} Loss {:.6f}'.format(i, num_batches, loss), end='\r', flush=True)
             
             duration = time.time() - start_time
@@ -72,11 +103,15 @@ class Cifar(nn.Module):
         for checkpoint_num in checkpoint_num_list:
             checkpointfile = os.path.join(self.config.modeldir, 'model-%d.ckpt'%(checkpoint_num))
             self.load(checkpointfile)
-
             preds = []
             for i in tqdm(range(x.shape[0])):
                 ### YOUR CODE HERE
-                
+                inputs = parse_record(x[i:i+1], training=False)
+                inputs = torch.tensor(inputs, dtype=torch.float32)
+                inputs = inputs.unsqueeze(0)
+                outputs = self.network(inputs)
+                _, predicted = torch.max(outputs, 1)
+                preds.append(predicted.item())
                 ### END CODE HERE
 
             y = torch.tensor(y)
