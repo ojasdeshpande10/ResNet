@@ -45,10 +45,9 @@ class Cifar(nn.Module):
     def train(self, x_train, y_train, max_epoch):
         num_samples = x_train.shape[0]
         num_batches = num_samples/self.config.batch_size
+        print("Computed the num of batches ",num_batches)
         self.network.train()
         # Determine how many batches in an epoch
-
-
         print('### Training... ###')
         for epoch in range(1, max_epoch+1):
             start_time = time.time()
