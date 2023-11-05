@@ -18,6 +18,8 @@ def configure():
     parser.add_argument("--first_num_filters", type=int, default=16, help='number of classes')
     parser.add_argument("--weight_decay", type=float, default=2e-4, help='weight decay rate')
     parser.add_argument("--modeldir", type=str, default='model_v1', help='model directory')
+    parser.add_argument("--learning_rate", type=float, default=0.1, help='learning_rate')
+    parser.add_argument("--momentum", type=float, default=0.997, help='momentum')
     ### YOUR CODE HERE
     return parser.parse_args()
 
