@@ -43,12 +43,11 @@ class Cifar(nn.Module):
 
 
     def train(self, x_train, y_train, max_epoch):
+        num_samples = x_train.shape[0]
+        num_batches = num_samples/self.config.batch_size
         self.network.train()
         # Determine how many batches in an epoch
-        num_samples = x_train.shape[0]
-        #num_batches = num_samples // self.config.batch_size
-        num_batches = 1
-        self.config.batch_size = 2
+
 
         print('### Training... ###')
         for epoch in range(1, max_epoch+1):
@@ -86,10 +85,8 @@ class Cifar(nn.Module):
                 loss = self.criterion(outputs, targets)
                 loss.backward()
                 self.optimizer.step()
-                print("helllo world")
                 i+=1
                 print('Batch {:d}/{:d} Loss {:.6f}'.format(i, num_batches, loss), end='\r', flush=True)
-            
             duration = time.time() - start_time
             print('Epoch {:d} Loss {:.6f} Duration {:.3f} seconds.'.format(epoch, loss, duration))
 
@@ -100,6 +97,8 @@ class Cifar(nn.Module):
     def test_or_validate(self, x, y, checkpoint_num_list):
         self.network.eval()
         print('### Test or Validation ###')
+        best_accuracy = 0.0
+        best_checkpoint = None
         for checkpoint_num in checkpoint_num_list:
             checkpointfile = os.path.join(self.config.modeldir, 'model-%d.ckpt'%(checkpoint_num))
             self.load(checkpointfile)
@@ -113,10 +112,15 @@ class Cifar(nn.Module):
                 _, predicted = torch.max(outputs, 1)
                 preds.append(predicted.item())
                 ### END CODE HERE
-
             y = torch.tensor(y)
             preds = torch.tensor(preds)
+            accuracy = torch.sum(preds == y) / y.shape[0]
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_checkpoint = checkpointfile
             print('Test accuracy: {:.4f}'.format(torch.sum(preds==y)/y.shape[0]))
+        print('Best test accuracy: {:.4f (from checkpoint {})'.format(best_accuracy, best_checkpoint))
+        return best_checkpoint
     
     def save(self, epoch):
         checkpoint_path = os.path.join(self.config.modeldir, 'model-%d.ckpt'%(epoch))
