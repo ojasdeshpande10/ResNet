@@ -44,7 +44,7 @@ class Cifar(nn.Module):
 
     def train(self, x_train, y_train, max_epoch):
         num_samples = x_train.shape[0]
-        num_batches = num_samples/self.config.batch_size
+        num_batches = int(num_samples/self.config.batch_size)
         print("Computed the num of batches ",num_batches)
         self.network.train()
         # Determine how many batches in an epoch
@@ -55,12 +55,11 @@ class Cifar(nn.Module):
             shuffle_index = np.random.permutation(num_samples)
             curr_x_train = x_train[shuffle_index]
             curr_y_train = y_train[shuffle_index]
-
             ### YOUR CODE HERE
             # Set the learning rate for this epoch
-            self.config.learning_rate = 0.1
+            if epoch % 50 == 0:
+                self.config.learning_rate = self.config.learning_rate/10            
             # Usage example: divide the initial learning rate by 10 after several epochs
-            
             ### YOUR CODE HERE
             
             for i in range(num_batches):
@@ -116,9 +115,9 @@ class Cifar(nn.Module):
             accuracy = torch.sum(preds == y) / y.shape[0]
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
-                best_checkpoint = checkpointfile
+                best_checkpoint = checkpoint_num
             print('Test accuracy: {:.4f}'.format(torch.sum(preds==y)/y.shape[0]))
-        print('Best test accuracy: {:.4f (from checkpoint {})'.format(best_accuracy, best_checkpoint))
+        print('Best test accuracy: {:.4f} (from checkpoint {})'.format(best_accuracy, best_checkpoint))
         return best_checkpoint
     
     def save(self, epoch):
