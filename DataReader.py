@@ -43,6 +43,7 @@ def load_data(data_dir):
     x_test=np.array(x_test,dtype=np.float32)
     x_test=x_test.reshape(-1,3072)
     y_test=np.array(y_test)
+    y_test=y_test.flatten()
     print(x_train.shape)
     print(x_train.dtype)
     print(y_train.shape)
