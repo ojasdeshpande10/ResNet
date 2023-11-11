@@ -39,7 +39,9 @@ def main(config):
     print("Pytorch version is ")
     print(torch.__version__)
 
-    model = Cifar(config).cuda()
+    model = Cifar(config)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
 
     ### YOUR CODE HERE
     # First step: use the train_new set and the valid set to choose hyperparameters.
