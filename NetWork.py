@@ -77,7 +77,7 @@ class ResNet(nn.Module):
             if i != 0:
                 first_input_channels = self.first_num_filters*i
             strides = 1 if i == 0 else 2
-            print("this is layer ",i," of the network")
+            # print("this is layer ",i," of the network")
             self.stack_layers.append(stack_layer(filters, block_fn, strides, self.resnet_size, first_input_channels))
         self.output_layer = output_layer(filters*4, self.resnet_version, self.num_classes)
     
@@ -86,10 +86,10 @@ class ResNet(nn.Module):
         if self.resnet_version == 1:
             outputs = self.batch_norm_relu_start(outputs)
         for i in range(3):
-            print("the input of layer ",i," is ",outputs.shape)
+            #print("the input of layer ",i," is ",outputs.shape)
             outputs = self.stack_layers[i](outputs)
         outputs = self.output_layer(outputs)
-        print(outputs.size())
+        #print(outputs.size())
         return outputs
 
 #############################################################################
@@ -203,20 +203,20 @@ class bottleneck_block(nn.Module):
         ### YOUR CODE HERE
         # The projection shortcut should come after the first batch norm and ReLU
 		# since it performs a 1x1 convolution.
-        print(inputs.shape)
+        #print(inputs.shape)
         out = self.bn_relu1(inputs)
-        print("1.",out.shape)
+        #print("1.",out.shape)
         shortcut = self.shortcut(out)
         out = self.conv1(out)
-        print("2.",out.shape)
+        #print("2.",out.shape)
         out = self.bn_relu2(out)
-        print("3.",out.shape)
+        #print("3.",out.shape)
         out = self.conv2(out)
-        print("4.",out.shape)
+        #print("4.",out.shape)
         out = self.bn_relu2(out)
         out = self.conv3(out)
-        print("5.",shortcut.shape)
-        print("6.",out.shape)
+        #print("5.",shortcut.shape)
+        #print("6.",out.shape)
         out += shortcut
         return out
         ### YOUR CODE HERE
@@ -242,16 +242,16 @@ class stack_layer(nn.Module):
         # Only the first block per stack_layer uses projection_shortcut and strides
         self.blocks = nn.ModuleList()
         for i in range(resnet_size):
-            print("i ------>",i)
-            print("strides ------->",strides)
+            #print("i ------>",i)
+            #print("strides ------->",strides)
             if i != 0:
                 first_num_filters=filters
                 projection_shortcut = False
             if strides == 2 and i != 0:
                 strides = 1
-            print("before loop input channels ------->",first_num_filters)
-            print("before loop output channels ------->",filters_out)
-            print("strides & projection shortcut", strides, projection_shortcut)
+            #print("before loop input channels ------->",first_num_filters)
+            #print("before loop output channels ------->",filters_out)
+            #print("strides & projection shortcut", strides, projection_shortcut)
             self.blocks.append(block_fn(filters=filters_out,projection_shortcut=projection_shortcut,strides=strides, first_num_filters=first_num_filters))
         ### END CODE HERE
     
@@ -286,13 +286,13 @@ class output_layer(nn.Module):
     
     def forward(self, inputs: Tensor) -> Tensor:
         ### END CODE HERE
-        print("Input of output layer")
-        print(inputs.size())
+        #print("Input of output layer")
+        #print(inputs.size())
         x=inputs
         x=self.avg_pool(x)
         x=x.view(x.size(0),-1)
         x=self.fc(x)
-        print("Output of output layer")
-        print(x.size())
+        #print("Output of output layer")
+        #print(x.size())
         return x
         ### END CODE HERE
