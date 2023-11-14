@@ -108,7 +108,7 @@ class Cifar(nn.Module):
                 inputs = parse_record(x[i:i+1], training=False)
                 inputs = torch.tensor(inputs, dtype=torch.float32)
                 inputs = inputs.unsqueeze(0)
-                inputs=inputs
+                inputs=inputs.cuda()
                 outputs = self.network(inputs)
                 _, predicted = torch.max(outputs, 1)
                 preds.append(predicted.item())
