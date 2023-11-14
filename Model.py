@@ -86,9 +86,9 @@ class Cifar(nn.Module):
                 loss.backward()
                 self.optimizer.step()
                 i+=1
-                print('Batch {:d}/{:d} Loss {:.6f}'.format(i, num_batches, loss), end='\r', flush=True)
+                print('Batch {:d}/{:d} Loss {:.6f}'.format(i, num_batches, loss.item()), end='\r', flush=True)
             duration = time.time() - start_time
-            print('Epoch {:d} Loss {:.6f} Duration {:.3f} seconds.'.format(epoch, loss, duration))
+            print('Epoch {:d} Loss {:.6f} Duration {:.3f} seconds.'.format(epoch, loss.item(), duration))
 
             if epoch % self.config.save_interval == 0:
                 self.save(epoch)
@@ -108,7 +108,7 @@ class Cifar(nn.Module):
                 inputs = parse_record(x[i:i+1], training=False)
                 inputs = torch.tensor(inputs, dtype=torch.float32)
                 inputs = inputs.unsqueeze(0)
-                inputs=inputs.cuda()
+                inputs=inputs
                 outputs = self.network(inputs)
                 _, predicted = torch.max(outputs, 1)
                 preds.append(predicted.item())
