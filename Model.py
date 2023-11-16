@@ -80,9 +80,9 @@ class Cifar(nn.Module):
                 #print(targets.shape)
                 inputs = inputs.cuda()
                 targets = targets.cuda()
-                self.optimizer.zero_grad()
                 outputs = self.network(inputs)
                 loss = self.criterion(outputs, targets)
+                self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
                 i+=1
@@ -108,7 +108,7 @@ class Cifar(nn.Module):
                 inputs = parse_record(x[i:i+1], training=False)
                 inputs = torch.tensor(inputs, dtype=torch.float32)
                 inputs = inputs.unsqueeze(0)
-                inputs=inputs.cuda()
+                inputs=inputs
                 outputs = self.network(inputs)
                 _, predicted = torch.max(outputs, 1)
                 preds.append(predicted.item())
