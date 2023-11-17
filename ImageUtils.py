@@ -61,7 +61,7 @@ def preprocess_image(image, training):
 
     ### YOUR CODE HERE
     #print("Shape of image before",image.shape)
-    image = (image - np.mean(image, axis=(0, 1)) / np.std(image, axis=(0, 1)))
+    image = ((image - np.mean(image, axis=(0, 1))) / np.std(image, axis=(0, 1)))
     #print("Shape of the image ", image.shape)
     # Subtract off the mean and divide by the standard deviation of the pixels.
     
