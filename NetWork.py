@@ -137,7 +137,7 @@ class standard_block(nn.Module):
         #change momentum
         self.bn2 = nn.BatchNorm2d(filters, eps=1e-5,momentum=0.997)
         self.shortcut = nn.Sequential()
-        if projection_shortcut:
+        if projection_shortcut and strides == 2:
             self.shortcut=nn.Sequential(
                 nn.Conv2d(in_channels=first_num_filters,out_channels=filters,kernel_size=1,stride=strides,bias=False),
                 nn.BatchNorm2d(filters, eps=1e-5,momentum=0.997)
@@ -242,16 +242,17 @@ class stack_layer(nn.Module):
         # Only the first block per stack_layer uses projection_shortcut and strides
         self.blocks = nn.ModuleList()
         for i in range(resnet_size):
-            #print("i ------>",i)
-            #print("strides ------->",strides)
+
             if i != 0:
                 first_num_filters=filters
                 projection_shortcut = False
             if strides == 2 and i != 0:
                 strides = 1
-            #print("before loop input channels ------->",first_num_filters)
-            #print("before loop output channels ------->",filters_out)
-            #print("strides & projection shortcut", strides, projection_shortcut)
+            # print("i ------>",i)
+            # print("strides ------->",strides)
+            # print("before loop input channels ------->",first_num_filters)
+            # print("before loop output channels ------->",filters_out)
+            # print("strides & projection shortcut", strides, projection_shortcut)
             self.blocks.append(block_fn(filters=filters_out,projection_shortcut=projection_shortcut,strides=strides, first_num_filters=first_num_filters))
         ### END CODE HERE
     
