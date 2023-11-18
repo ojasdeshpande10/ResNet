@@ -29,7 +29,7 @@ class Cifar(nn.Module):
         self.optimizer = optim.SGD(
             self.network.parameters(),
             lr=self.config.learning_rate,
-            momentum=self.config.momentum,
+            momentum=0.9,
             weight_decay=self.config.weight_decay
         )
         ### YOUR CODE HERE

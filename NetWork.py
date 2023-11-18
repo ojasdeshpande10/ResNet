@@ -242,7 +242,6 @@ class stack_layer(nn.Module):
         # Only the first block per stack_layer uses projection_shortcut and strides
         self.blocks = nn.ModuleList()
         for i in range(resnet_size):
-
             if i != 0:
                 first_num_filters=filters
                 projection_shortcut = False
