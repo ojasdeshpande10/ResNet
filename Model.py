@@ -43,10 +43,11 @@ class Cifar(nn.Module):
 
 
     def train(self, x_train, y_train, max_epoch):
+        self.network.train()
         num_samples = x_train.shape[0]
         num_batches = int(num_samples/self.config.batch_size)
         print("Computed the num of batches ",num_batches)
-        self.network.train()
+        learning_rate = self.config.learning_rate
         # Determine how many batches in an epoch
         print('### Training... ###')
         for epoch in range(1, max_epoch+1):
@@ -58,7 +59,8 @@ class Cifar(nn.Module):
             ### YOUR CODE HERE
             # Set the learning rate for this epoch
             if epoch % 50 == 0:
-                self.config.learning_rate = self.config.learning_rate/10            
+                learning_rate = learning_rate/10
+                self.optimizer.param_groups[0]['lr'] = learning_rate           
             # Usage example: divide the initial learning rate by 10 after several epochs
             ### YOUR CODE HERE
             
